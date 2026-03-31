@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow: rgba(0, 0, 0, 0.25);
+            --text-primary: #f8f9fa;
+            --text-secondary: #e9ecef;
+            --accent: #d4af37;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            cursor: none;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #111827, #1e1b4b, #0f172a, #312e81);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+            overflow-x: hidden;
+            color: var(--text-primary);
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Cinematic Intro Overlay */
+        .cinematic-intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease, visibility 1.5s;
+            overflow: hidden;
+        }
+
+        .cinematic-text {
+            position: absolute;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            letter-spacing: 6px;
+            color: #d4af37;
+            opacity: 0;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .text-1 {
+            animation: cinematicText 4s ease forwards;
+        }
+
+        .text-2 {
+            animation: cinematicText 4.5s ease 3.5s forwards;
+        }
+
+        @keyframes cinematicText {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+                filter: blur(10px);
+            }
+
+            30% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0px);
+            }
+
+            70% {
+                opacity: 1;
+                transform: scale(1.05);
+                filter: blur(0px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1.1);
+                filter: blur(10px);
+            }
+        }
+
+        .cinematic-intro.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Cursor Sparkles */
+        .custom-cursor {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 99997;
+            border-radius: 50%;
+            box-shadow: 0 0 8px 1px var(--accent);
+            animation: sparkleAnim 0.8s linear forwards;
+        }
+
+        @keyframes sparkleAnim {
+            0% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0) translateY(-25px);
+                opacity: 0;
+            }
+        }
+
+        /* Card Container */
+        .card-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 650px;
+            padding: 3.5rem 2.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            box-shadow: 0 30px 60px -12px var(--glass-shadow);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .card-container.show {
+            animation: fadeUpIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeUpIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Centerpiece Layout */
+        .centerpiece {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: floatCenterpiece 4s ease-in-out infinite;
+        }
+
+        @keyframes floatCenterpiece {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* Premium Teacher Portrait */
+        .image-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            padding: 5px;
+            background: linear-gradient(135deg, var(--accent), #fef08a, #ffffff, var(--accent));
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.5);
+            z-index: 10;
+            margin-bottom: 25px;
+            /* Spaced out so the cake and candles are fully visible below */
+        }
+
+        .image-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #2a2a2a;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .teacher-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 1.2s ease;
+            filter: contrast(1.05) brightness(1.02);
+        }
+
+        .image-wrapper:hover .teacher-image {
+            transform: scale(1.15) rotate(3deg);
+            filter: contrast(1.1) brightness(1.1);
+        }
+
+        /* Sparkle flair on portrait */
+        .image-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #fff 10%, rgba(255, 255, 255, 0) 60%);
+            border-radius: 50%;
+            box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.8);
+            animation: starTwinkle 2s infinite alternate;
+        }
+
+        @keyframes starTwinkle {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        /* 2D Cake Section */
+        .cake-container {
+            position: relative;
+            width: 150px;
+            height: 110px;
+            /* Increased height to give candles room without overflowing */
+        }
+
+        .cake-2d {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .layer-bottom {
+            width: 120px;
+            height: 40px;
+            background: linear-gradient(to right, #d4af37, #fef08a, #d4af37);
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .layer-bottom::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .layer-middle {
+            width: 90px;
+            height: 35px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            margin-bottom: -5px;
+        }
+
+        .layer-middle::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: #e9ecef;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .layer-top {
+            width: 70px;
+            height: 25px;
+            background: linear-gradient(to right, #d4af37, #fef08a, #d4af37);
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 3;
+            margin-bottom: -5px;
+        }
+
+        /* Center candle on top of the cake */
+        .candle-2d {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 25px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 4px, #ff4757 4px, #ff4757 8px);
+            border-radius: 3px;
+            z-index: 4;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .flame-2d {
+            position: absolute;
+            width: 10px;
+            height: 16px;
+            background: #fffa65;
+            border-radius: 50% 50% 20% 20%;
+            top: -18px;
+            left: -1px;
+            box-shadow: 0 0 10px #ff9f43, 0 0 20px #ff9f43;
+            animation: flicker 0.4s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% {
+                transform: scale(1) rotate(-3deg);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.1) rotate(3deg);
+                opacity: 1;
+                box-shadow: 0 0 20px #ff9f43, 0 0 35px #ff9f43;
+            }
+        }
+
+        /* General Typography & Elements */
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--accent);
+            margin-bottom: 2.5rem;
+            font-style: italic;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        .message-container {
+            min-height: 90px;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
+        }
+
+        .typing-text {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.25rem;
+            background-color: var(--accent);
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .hidden-message {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 1s ease;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .hidden-message.reveal {
+            max-height: 400px;
+            opacity: 1;
+            padding-top: 2.5rem;
+            margin-top: 1.5rem;
+            border-top-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .highlight-text {
+            color: var(--accent);
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: var(--text-primary);
+            padding: 1.1rem 3rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            font-weight: 500;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            cursor: none;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sparkle Cursor -->
+    <div class="custom-cursor" id="customCursor"></div>
+
+    <!-- Cinematic Intro -->
+    <div class="cinematic-intro" id="cinematicIntro">
+        <div class="cinematic-text text-1">A Special Presentation</div>
+        <div class="cinematic-text text-2">For An Extraordinary Teacher</div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.pixabay.com/audio/2022/05/16/audio_92cb6b7336.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Main Card -->
+    <div class="card-container" id="mainCard">
+        <div class="centerpiece">
+            <!-- Premium Teacher Portrait -->
+            <div class="image-wrapper">
+                <div class="image-inner">
+                    <!-- Save your image as 2.jpeg in the same folder as this HTML file -->
+                    <img src="./2.jpeg"
+                        onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'"
+                        alt="Beautiful Teacher Portrait" class="teacher-image">
+                </div>
+            </div>
+
+            <!-- Beautiful 2D CSS Cake -->
+            <div class="cake-container">
+                <div class="cake-2d">
+                    <div class="candle-2d">
+                        <div class="flame-2d"></div>
+                    </div>
+                    <div class="layer-top"></div>
+                    <div class="layer-middle"></div>
+                    <div class="layer-bottom"></div>
+                </div>
+            </div>
+        </div>
+
+        <h1 id="mainTitle">Happy Birthday Ma'am</h1>
+        <div class="subtitle">To an Amazing Teacher on Your Special Day</div>
+
+        <div class="message-container">
+            <span class="typing-text" id="typewriter"></span><span class="cursor"></span>
+        </div>
+
+        <button class="btn" id="revealBtn">Open Special Message 🎉</button>
+
+        <div class="hidden-message" id="hiddenMsg">
+            “Respected Ma’am, wishing you a very Happy Birthday.
+            May this special day bring you joy, good health, and continued achievements.<br><br>
+            Thank you for guiding us with patience, leading us with strength, and supporting us like a true mentor.
+            We are deeply grateful to have you as our teacher.”
+            <br><br>
+            <span class="highlight-text">Wishing you the absolute happiest of birthday ✨</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Cinematic Intro Sequence
+            const introTime = 8000; // 8 seconds total intro
+            setTimeout(() => {
+                document.getElementById('cinematicIntro').classList.add('hide');
+                document.getElementById('mainCard').classList.add('show');
+                setTimeout(startTyping, 1200); // Start typing after card fades in
+            }, introTime);
+
+            // 2. Cursor Sparkles Effect
+            const cursor = document.getElementById('customCursor');
+            const colors = ['#ffffff', '#d4af37', '#fef08a'];
+
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+
+                // Randomly generate sparkles on move
+                if (Math.random() > 0.5) {
+                    let sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    // Randomize size and color
+                    const size = Math.random() * 4 + 2;
+                    sparkle.style.width = size + 'px';
+                    sparkle.style.height = size + 'px';
+                    sparkle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    sparkle.style.left = (e.clientX + (Math.random() * 20 - 10)) + 'px';
+                    sparkle.style.top = (e.clientY + (Math.random() * 20 - 10)) + 'px';
+                    document.body.appendChild(sparkle);
+
+                    // Remove sparkle element after animation
+                    setTimeout(() => sparkle.remove(), 800);
+                }
+            });
+
+            // Button hover effect for cursor
+            const btn = document.getElementById('revealBtn');
+            btn.addEventListener('mouseenter', () => {
+                cursor.style.width = '30px'; cursor.style.height = '30px';
+                cursor.style.background = 'rgba(212, 175, 55, 0.2)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                cursor.style.width = '15px'; cursor.style.height = '15px';
+                cursor.style.background = 'transparent';
+            });
+
+            // 3. Typing Text
+            const textToType = "A teacher like you is rare , a friendly by nature , a mentor , a guide ,we are incredibly grateful to have you as our teacher and.Truly the best teacher ever";
+            let typeIndex = 0;
+            function startTyping() {
+                if (typeIndex < textToType.length) {
+                    document.getElementById('typewriter').innerHTML += textToType.charAt(typeIndex);
+                    typeIndex++;
+                    setTimeout(startTyping, 40);
+                }
+            }
+
+            // 4. Reveal Audio & Confetti
+            let isRevealed = false;
+            btn.addEventListener('click', () => {
+                if (!isRevealed) {
+                    document.getElementById('hiddenMsg').classList.add('reveal');
+                    btn.textContent = "Celebrate 🥳";
+                    isRevealed = true;
+
+                    // Play music on click
+                    const bgMusic = document.getElementById('bgMusic');
+                    bgMusic.volume = 0.35;
+                    bgMusic.play().catch(e => console.log("Audio play prevented"));
+                }
+
+                // Fire Premium Confetti
+                const count = 250;
+                function fire(ratio, opts) {
+                    confetti(Object.assign({ origin: { y: 0.75 }, zIndex: 100, colors: colors }, opts, { particleCount: Math.floor(count * ratio) }));
+                }
+                fire(0.25, { spread: 30, startVelocity: 60 });
+                fire(0.2, { spread: 70 });
+                fire(0.35, { spread: 110, decay: 0.9, scalar: 0.9 });
+                fire(0.1, { spread: 130, startVelocity: 30, decay: 0.92, scalar: 1.2 });
+            });
+        });
+    </script>
+</body>
+
+</html>
